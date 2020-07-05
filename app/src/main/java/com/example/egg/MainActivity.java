@@ -3,6 +3,7 @@ package com.example.egg;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     Button OK;
 
     // music
-    private SoundManager soundManager;
+    MediaPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +47,6 @@ public class MainActivity extends AppCompatActivity {
         DatabaseReference myref = database.getReference("Data");
         final DatabaseReference reference = database.getReference("history");
 
-        // music
-        soundManager = new SoundManager();
-        soundManager.initSound(getBaseContext());
-        soundManager.addSound(1, R.raw.coin);
 
         myref.child("NumberEgg").addValueEventListener(new ValueEventListener() {
             @Override
@@ -95,6 +92,10 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int value = dataSnapshot.getValue(int.class);
                 SoTrungDaNo.setText(value+"");
+
+                if(value >= 1){
+                    playMusic();
+                }
             }
 
             @Override
@@ -147,8 +148,15 @@ public class MainActivity extends AppCompatActivity {
                 reference.child(path).setValue(data);
 
                 // playsound
-                //soundManager.playSound(1);
+                //playMusic();
             }
         });
+    }
+
+    private void playMusic() {
+        if(player == null){
+            player = MediaPlayer.create(this, R.raw.confirm);
+        }
+        player.start();
     }
 }
